@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>马匹人格类型测试 — 基于《马脑与人脑》神经科学</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #2471A3;
+    --blue-deep: #1B4F72;
+    --blue-light: #5DADE2;
+    --blue-pale: #D6EAF8;
+    --cream: #F7F4EF;
+    --warm: #E8DCC8;
+    --gold: #D4A017;
+    --gold-light: #F4D03F;
+    --teal: #1ABC9C;
+    --teal-deep: #117A65;
+    --text: #1C2E3F;
+    --text-light: #5D6D7E;
+    --white: #FFFFFF;
+    --shadow: 0 4px 24px rgba(27,79,114,0.10);
+    --radius: 16px;
+    /* backward compat aliases */
+    --sage: var(--blue);
+    --sage-dark: var(--blue-deep);
+    --sage-light: var(--blue-pale);
+    --brown: var(--gold);
+    --brown-dark: var(--text);
+    --brick: var(--teal);
+  }
+
+  body {
+    font-family: 'Inter', 'Noto Sans SC', system-ui, sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ─── Header ─── */
+  .header {
+    background: linear-gradient(135deg, var(--sage-dark) 0%, var(--sage) 100%);
+    padding: 40px 20px 36px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 40px;
+    background: var(--cream);
+    border-radius: 40px 40px 0 0;
+  }
+  .header-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+  .header h1 {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: clamp(28px, 5vw, 44px);
+    color: white;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .header h1 span { display: block; font-size: 0.55em; font-weight: 400; opacity: 0.9; margin-top: 8px; font-family: 'Inter', sans-serif; }
+  .header p {
+    color: rgba(255,255,255,0.85);
+    max-width: 520px;
+    margin: 12px auto 0;
+    font-size: 15px;
+  }
+
+  /* ─── Screen Management ─── */
+  .screen {
+    display: none;
+    opacity: 0;
+  }
+  .screen.active {
+    display: block;
+    animation: screenEnter 0.4s ease-out forwards;
+  }
+  @keyframes screenEnter {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* ─── Start Screen ─── */
+  #start-screen {
+    text-align: center;
+    padding: 48px 20px 60px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  #start-screen .icon {
+    font-size: 64px;
+    margin-bottom: 8px;
+    display: block;
+  }
+  #start-screen h2 {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 22px;
+    margin-bottom: 12px;
+    color: var(--brown-dark);
+  }
+  #start-screen p {
+    color: var(--text-light);
+    font-size: 15px;
+    margin-bottom: 8px;
+    line-height: 1.7;
+  }
+  #start-screen .divider {
+    width: 60px; height: 3px;
+    background: var(--sage);
+    margin: 20px auto;
+    border-radius: 2px;
+  }
+  .feature-list {
+    text-align: left;
+    display: inline-block;
+    margin: 12px 0 20px;
+    list-style: none;
+  }
+  .feature-list li {
+    padding: 6px 0;
+    font-size: 14px;
+    color: var(--text);
+  }
+  .feature-list li::before {
+    content: '✦ ';
+    color: var(--sage-dark);
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 14px 40px;
+    border-radius: 40px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .btn-primary {
+    background: var(--sage-dark);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--brown); transform: translateY(-1px); box-shadow: var(--shadow); }
+  .btn-outline {
+    background: transparent;
+    color: var(--sage-dark);
+    border: 2px solid var(--sage);
+  }
+  .btn-outline:hover { background: var(--sage-light); }
+  .btn-small {
+    padding: 10px 24px;
+    font-size: 14px;
+  }
+
+  /* ─── Question Screen ─── */
+  #question-screen {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 20px 90px;
+  }
+  .progress-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 36px;
+    justify-content: center;
+  }
+  .progress-dot {
+    width: 10px; height: 10px;
+    border-radius: 10px;
+    background: var(--warm);
+    transition: all 0.3s;
+  }
+  .progress-dot.filled { background: var(--sage); }
+  .progress-dot.current {
+    background: var(--sage-dark);
+    transform: scale(1.3);
+  }
+  .progress-text {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 16px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  .question-number {
+    font-size: 13px;
+    color: var(--text-light);
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .question-text {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 28px;
+    color: var(--brown-dark);
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .option-card {
+    background: var(--white);
+    border: 2px solid var(--warm);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .option-card:hover {
+    border-color: var(--sage);
+    background: var(--sage-light);
+    transform: translateX(4px);
+  }
+  .option-card.selected {
+    border-color: var(--sage-dark);
+    background: var(--blue-pale);
+  }
+  .option-card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 12px; right: 14px;
+    font-size: 18px;
+    color: var(--sage-dark);
+    font-weight: 700;
+  }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-6px); } 40%,80% { transform: translateX(6px); } }
+  .shake { animation: shake 0.3s ease-out; }
+  .option-card .label {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--sage-dark);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .option-card .text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+
+  .nav-buttons {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 720px;
+    background: var(--cream);
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    z-index: 50;
+    box-shadow: 0 -2px 12px rgba(27,79,114,0.08);
+    border-radius: 16px 16px 0 0;
+  }
+
+  /* ─── Results Screen ─── */
+  #result-screen {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+  }
+
+  .result-header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .result-header .type-code {
+    display: inline-block;
+    background: var(--blue-deep);
+    color: white;
+    font-size: 52px;
+    font-weight: 700;
+    font-family: 'Inter', monospace;
+    letter-spacing: 10px;
+    padding: 6px 28px;
+    border-radius: 16px;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 20px rgba(27,79,114,0.25);
+  }
+  .result-header .type-dims {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 14px;
+    font-size: 14px;
+    color: var(--text-light);
+  }
+  .result-header .type-dims .dim-chip {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: var(--blue-pale);
+    font-weight: 600;
+  }
+  .result-header .type-dims .dim-chip .letter {
+    font-family: 'Inter', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--blue-deep);
+  }
+  .result-header .type-dims .dim-chip .meaning {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-light);
+    letter-spacing: 0.3px;
+  }
+  .result-header .type-dims .dim-sep {
+    color: var(--warm);
+    font-size: 14px;
+    font-weight: 300;
+  }
+  .result-header .type-name {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .result-header .type-subtitle {
+    color: var(--text-light);
+    font-size: 14px;
+    margin-top: 0;
+  }
+
+  .result-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 32px;
+    box-shadow: var(--shadow);
+    margin-bottom: 24px;
+  }
+  .result-card h3 {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 18px;
+    color: var(--brown-dark);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--sage-light);
+  }
+  .result-card p, .result-card li {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+  .result-card ul {
+    padding-left: 20px;
+  }
+  .result-card li { margin-bottom: 6px; }
+
+  .dimension-breakdown {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 540px) {
+    .dimension-breakdown { grid-template-columns: 1fr; }
+  }
+  .dim-bar {
+    padding: 14px;
+    border-radius: 10px;
+    background: var(--cream);
+  }
+  .dim-bar .dim-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .dim-bar .track {
+    height: 8px;
+    border-radius: 8px;
+    background: var(--warm);
+    position: relative;
+    overflow: hidden;
+  }
+  .dim-bar .fill {
+    height: 100%;
+    border-radius: 8px;
+    background: var(--sage);
+    transition: width 0.6s;
+  }
+
+  .cta-box {
+    background: linear-gradient(135deg, var(--brown-dark) 0%, var(--brown) 100%);
+    color: white;
+    border-radius: var(--radius);
+    padding: 36px 32px;
+    text-align: center;
+  }
+  .cta-box h3 {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 22px;
+    margin-bottom: 12px;
+    color: white;
+    border: none;
+    padding: 0;
+  }
+  .cta-box p {
+    font-size: 15px;
+    opacity: 0.9;
+    margin-bottom: 20px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+  }
+  .cta-box .btn-primary {
+    background: white;
+    color: var(--brown-dark);
+  }
+  .cta-box .btn-primary:hover { background: var(--sage-light); color: var(--brown-dark); }
+
+  /* ─── Neuroscience ─── */
+  .neuro-item {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--warm);
+  }
+  .neuro-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .neuro-item:first-child { padding-top: 0; }
+  .neuro-label {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--sage-dark);
+    background: var(--sage-light);
+    padding: 2px 10px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+  }
+  .neuro-title {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--brown-dark);
+    margin-bottom: 6px;
+  }
+  .neuro-item p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .cta-note {
+    font-size: 13px;
+    opacity: 0.7;
+    margin-top: 12px;
+  }
+
+  .share-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  /* ─── Footer ─── */
+  .footer {
+    text-align: center;
+    padding: 32px 20px;
+    color: var(--text-light);
+    font-size: 13px;
+    border-top: 1px solid var(--warm);
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .footer a {
+    color: var(--sage-dark);
+    text-decoration: none;
+  }
+  .footer .book-ref {
+    margin-top: 8px;
+    font-style: italic;
+    font-size: 12px;
+  }
+
+  /* ─── Animations ─── */
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeIn 0.45s ease-out both; }
+  .fade-in-d1 { animation: fadeIn 0.45s ease-out 0.1s both; }
+  .fade-in-d2 { animation: fadeIn 0.45s ease-out 0.2s both; }
+  .fade-in-d3 { animation: fadeIn 0.45s ease-out 0.3s both; }
+  .fade-in-d4 { animation: fadeIn 0.45s ease-out 0.4s both; }
+  .fade-in-d5 { animation: fadeIn 0.45s ease-out 0.5s both; }
+
+  @keyframes scaleIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+  .scale-in { animation: scaleIn 0.4s ease-out both; }
+
+  @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(27,79,114,0.3); }
+    50% { box-shadow: 0 0 0 8px rgba(27,79,114,0); }
+  }
+  .pulse-glow { animation: pulseGlow 1.5s ease-out; }
+
+  @keyframes confettiFall {
+    0% { transform: translateY(-20vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+  .confetti-piece {
+    position: fixed;
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  @keyframes optionEnter {
+    from { opacity: 0; transform: translateX(-12px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .option-card { animation: optionEnter 0.3s ease-out both; }
+  .option-card:nth-child(2) { animation-delay: 0.08s; }
+
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .question-text { animation: slideInRight 0.35s ease-out; }
+
+  /* ─── Restart ─── */
+  .restart-area {
+    text-align: center;
+    margin-top: 24px;
+  }
+
+  /* ─── Handbook Modal ─── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(28,46,63,0.6);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 300; padding: 20px;
+    animation: fadeIn 0.2s ease-out;
+  }
+  .handbook-modal {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 36px 32px 28px;
+    max-width: 480px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(27,79,114,0.25);
+    position: relative;
+    animation: scaleIn 0.3s ease-out;
+  }
+  .modal-close {
+    position: absolute; top: 14px; right: 14px;
+    background: var(--cream); border: none;
+    width: 32px; height: 32px; border-radius: 50%;
+    font-size: 14px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-light); transition: all 0.2s;
+  }
+  .modal-close:hover { background: var(--warm); color: var(--text); }
+  .hm-icon { font-size: 40px; text-align: center; margin-bottom: 8px; }
+  .hm-title {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 22px; font-weight: 700;
+    text-align: center; color: var(--text);
+    margin-bottom: 4px;
+  }
+  .hm-subtitle {
+    text-align: center; font-size: 13px;
+    color: var(--text-light); margin-bottom: 6px;
+  }
+  .hm-divider {
+    width: 50px; height: 3px;
+    background: var(--blue); margin: 16px auto;
+    border-radius: 2px;
+  }
+  .hm-section { margin-bottom: 16px; }
+  .hm-section h3 {
+    font-size: 15px; font-weight: 700;
+    color: var(--blue-deep); margin-bottom: 8px;
+    border: none; padding: 0;
+  }
+  .hm-section ul { padding-left: 18px; list-style: none; }
+  .hm-section li {
+    position: relative; padding-left: 18px;
+    font-size: 14px; line-height: 1.6; color: var(--text);
+    margin-bottom: 6px;
+  }
+  .hm-section li::before {
+    content: '•'; position: absolute; left: 0;
+    color: var(--blue); font-weight: 700;
+  }
+  .hm-body { font-size: 14px; line-height: 1.7; color: var(--text-light); }
+  .hm-price {
+    text-align: center; margin: 20px 0 14px;
+    display: flex; align-items: baseline; justify-content: center; gap: 6px;
+  }
+  .hm-price-label { font-size: 14px; color: var(--text-light); }
+  .hm-price-amount {
+    font-family: 'Inter', sans-serif;
+    font-size: 36px; font-weight: 700; color: var(--blue-deep);
+  }
+  .hm-btn {
+    display: block; text-align: center;
+    background: linear-gradient(135deg, var(--blue-deep), var(--blue));
+    color: white; text-decoration: none;
+    padding: 16px; border-radius: 14px;
+    font-size: 18px; font-weight: 700;
+    transition: all 0.2s; cursor: pointer;
+  }
+  .hm-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(27,79,114,0.3); }
+  .hm-footer-note {
+    text-align: center; font-size: 14px;
+    color: var(--blue-deep); margin-top: 18px; opacity: 1;
+    font-weight: 600;
+  }
+  .hm-delivery-box {
+    background: #FFF8E1;
+    border: 2px solid var(--gold);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 16px 0 8px;
+    text-align: center;
+  }
+  .hm-delivery-box .step {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+  .hm-delivery-box .highlight {
+    display: inline-block;
+    background: var(--gold);
+    color: white;
+    font-weight: 700;
+    padding: 0 10px;
+    border-radius: 4px;
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 640px) {
+    #question-screen { padding: 20px 14px 80px; }
+    #result-screen { padding: 24px 14px 40px; }
+    #start-screen { padding: 32px 16px 40px; }
+    .option-card { padding: 14px 16px; }
+    .option-card .text { font-size: 14px; }
+    .nav-buttons { padding: 12px 14px; border-radius: 12px 12px 0 0; }
+    .nav-buttons .btn { padding: 12px 20px; font-size: 14px; min-height: 44px; }
+    .restart-area { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .restart-area .btn { margin-left: 0 !important; }
+    .dimension-breakdown { grid-template-columns: 1fr; }
+    .share-buttons { flex-wrap: wrap; }
+    .result-header .type-code { font-size: 36px; letter-spacing: 8px; padding: 4px 20px; }
+    .result-header .type-name { font-size: 18px; }
+    .result-header .type-dims { gap: 4px; font-size: 12px; flex-wrap: wrap; }
+    .result-header .type-dims .dim-chip { padding: 3px 8px; }
+    .result-header .type-dims .dim-chip .letter { font-size: 13px; }
+    .result-header .type-dims .dim-chip .meaning { font-size: 9px; }
+    .result-card { padding: 20px; }
+    .cta-box { padding: 24px 20px; }
+    .btn { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+  }
+  @media (max-width: 480px) {
+    .handbook-modal { padding: 28px 20px 24px; }
+    .hm-title { font-size: 19px; }
+    .hm-price-amount { font-size: 30px; }
+    .hm-btn { font-size: 16px; padding: 14px; }
+  }
+  @media (max-width: 380px) {
+    .header h1 { font-size: 24px; }
+    .question-text { font-size: 16px; }
+    .option-card { padding: 12px 14px; }
+    .progress-text { font-size: 12px; }
+    .restart-area .btn { font-size: 12px; padding: 8px 14px; }
+  }
+  /* Improve touch scrolling */
+  html { -webkit-overflow-scrolling: touch; }
+  body { overscroll-behavior-y: contain; }
+  /* Prevent zoom on double-tap for iOS */
+  button, select, input { touch-action: manipulation; font-size: 16px; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════ HEADER ════════════════ -->
+<header class="header">
+  <div class="header-badge">基于神经科学</div>
+  <h1>
+    你的马是什么性格？
+    <span>依据《Horse Brain, Human Brain》</span>
+  </h1>
+  <p>一套基于马脑神经科学的 16 型马匹人格分类体系<br>不拟人化，只靠行为观察</p>
+</header>
+
+<!-- ════════════════ SCREEN: START ════════════════ -->
+<div id="start-screen" class="screen active">
+  <span class="icon">🐴</span>
+  <h2>了解你的马，从大脑开始</h2>
+  <div class="divider"></div>
+  <p>每匹马都是独特的个体。就像人类有不同的人格，马也有与生俱来的行为倾向——这些倾向根植于它们的大脑结构。</p>
+  <p style="margin-top:8px;"><strong>本测试基于</strong> Janet Jones 博士的著作<br><em>《Horse Brain, Human Brain: The Neuroscience of Horsemanship》</em>，从神经科学角度分析马的四种核心行为维度。</p>
+
+  <ul class="feature-list">
+    <li><strong>注意力风格</strong> — 你的马是"警觉型"还是"淡定型"？</li>
+    <li><strong>情绪基调</strong> — 它对压力的反应是"紧张型"还是"稳健型"？</li>
+    <li><strong>社交倾向</strong> — 它是"群居依赖型"还是"独立自主型"？</li>
+    <li><strong>感知灵敏度</strong> — 它对触觉和辅助是"敏锐型"还是"笃定型"？</li>
+  </ul>
+
+  <p style="font-size:14px;color:var(--text-light);margin-bottom:20px;">只需 3-5 分钟，从真实行为出发，找到你马匹的专属人格类型。</p>
+
+  <button class="btn btn-primary" onclick="startTest()">开始测试 →</button>
+  <div style="margin-top:16px;font-size:13px;color:var(--text-light);">
+    16 道选择题 · 不需要马术基础
+  </div>
+</div>
+
+<!-- ════════════════ SCREEN: QUESTIONS ════════════════ -->
+<div id="question-screen" class="screen">
+  <div class="progress-bar" id="progress-bar"></div>
+  <div class="progress-text" id="progress-text"></div>
+  <div class="question-number" id="q-number"></div>
+  <div class="question-text" id="q-text"></div>
+  <div class="options" id="q-options"></div>
+  <div class="nav-buttons">
+    <button class="btn btn-outline btn-small" id="prev-btn" onclick="prevQuestion()">← 上一题</button>
+    <button class="btn btn-primary btn-small" id="next-btn" onclick="nextQuestion()">下一题 →</button>
+  </div>
+</div>
+
+<!-- ════════════════ SCREEN: RESULTS ════════════════ -->
+<div id="result-screen" class="screen">
+  <div class="result-header scale-in">
+    <div class="type-code" id="r-code"></div>
+    <div class="type-dims" id="r-dims"></div>
+    <div class="type-name" id="r-name"></div>
+    <div class="type-subtitle" id="r-subtitle"></div>
+  </div>
+
+  <div class="result-card fade-in-d1">
+    <h3>性格画像</h3>
+    <p id="r-description"></p>
+  </div>
+
+  <div class="result-card fade-in-d2">
+    <h3>行为特征</h3>
+    <ul id="r-traits"></ul>
+  </div>
+
+  <div class="result-card fade-in-d3">
+    <h3>训练与相处建议</h3>
+    <ul id="r-tips"></ul>
+  </div>
+
+  <div class="result-card fade-in-d4">
+    <h3>四维拆解</h3>
+    <div class="dimension-breakdown" id="dim-bars"></div>
+  </div>
+
+  <div class="result-card fade-in-d5" id="neuro-card">
+    <h3>神经科学原理解读</h3>
+    <div id="neuro-content"></div>
+  </div>
+
+  <div class="cta-box fade-in">
+    <h3>想深入了解马的大脑？</h3>
+    <p>
+      《Horse Brain, Human Brain》原版为英文，我们编写了<strong>深度中文解读手册</strong>，包含神经科学核心拆解、实战动作手册、故障排除 FAQ 和非骑乘行为管理四大板块。
+    </p>
+    <button class="btn btn-primary" onclick="showHandbookModal()">了解深度解读手册 →</button>
+    <div class="cta-note">约 3 万字 · 核心拆解 + 实战动作手册 + FAQ 速查索引</div>
+  </div>
+
+  <div class="restart-area">
+    <button class="btn btn-outline btn-small" onclick="restartTest()">重新测试</button>
+    <button class="btn btn-outline btn-small" onclick="copyResult()">复制结果</button>
+    <button class="btn btn-outline btn-small" onclick="shareResult()">分享结果</button>
+  </div>
+
+  <footer class="footer">
+    本测试灵感源自 <em>Horse Brain, Human Brain</em> by Janet Jones, PhD<br>
+    所有描述基于马脑神经科学与行为观察，不涉及拟人化假设
+  </footer>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════
+
+const DIMS = [
+  { id: 'vigilant', label: '注意力风格', left: '警觉型 V', right: '淡定型 C', shortL: 'V', shortR: 'C' },
+  { id: 'nervous',  label: '情绪基调',   left: '紧张型 N', right: '稳健型 S', shortL: 'N', shortR: 'S' },
+  { id: 'herd',     label: '社交倾向',   left: '群居型 H', right: '独立型 L', shortL: 'H', shortR: 'L' },
+  { id: 'acute',    label: '感知灵敏度', left: '敏锐型 A', right: '笃定型 G', shortL: 'A', shortR: 'G' },
+];
+
+const NEURO_SCIENCE = {
+  vigilant: {
+    title: '马脑的警戒系统',
+    body: '马是猎物动物（prey animal），大脑进化出了高度发达的威胁检测系统。Janet Jones 在书中指出，马的感官不断扫描环境，大脑自动过滤信息并优先处理潜在危险信号。一匹"警觉型"的马拥有更活跃的威胁检测神经网络——它的杏仁核（amygdala）对陌生刺激的反应阈值更低。这并非缺点，而是生存本能的体现。理解这一点，就能用"间接训练法"逐步降低其警戒水平，而非与本能对抗。',
+  },
+  calm: {
+    title: '淡定：低警戒基线',
+    body: '"淡定型"马的威胁检测系统基线较低。它们的神经系统能更快区分"真正的威胁"和"无害的新奇事物"。Janet Jones 指出，这通常与早期脱敏训练和遗传倾向有关。马的镜像神经元（mirror neurons）使它们能通过观察同伴来学习——如果一匹小马看到母亲对奇怪物体保持冷静，它自己的神经通路也会刻录"无需恐惧"的印记。淡定是优势，但也需要注意：过于淡定的马可能让骑手忽略它实际上感到不适的信号。',
+  },
+  nervous: {
+    title: '情绪记忆与压力反应',
+    body: '马的大脑对恐惧经历的编码极其深刻——这是生存所需。Janet Jones 在书中强调，"恐惧巩固记忆"（fear consolidates memory）：一次负面经历就足以在马的神经通路中刻下难以磨灭的印记。"紧张型"马的 HPA 轴（下丘脑-垂体-肾上腺轴）对压力的反应更敏感，皮质醇释放更快。但这并不意味着"不好"——紧张的马也往往学习更快，因为它们对环境细节更敏感。关键是为它们创造可预测、低压力的学习环境。',
+  },
+  steady: {
+    title: '稳健：高压力阈值',
+    body: '"稳健型"马有着更高的压力阈值和更强的情绪恢复力。它们的自主神经系统能更快地从"战斗或逃跑"模式切换回"休息与消化"模式。Janet Jones 指出，这既是遗传因素也是环境塑造的结果——持续的正向体验可以改变神经通路的结构。稳健的马在群体中常常扮演"情绪稳定器"的角色：其他马会通过镜像神经元感受到它的平静，从而也降低自己的焦虑水平。',
+  },
+  herd: {
+    title: '马是强社会性动物',
+    body: 'Janet Jones 写道："马是强烈的社会性动物（strongly social animals），有 herd 本能。"马的大脑进化出复杂的社交处理网络：它们能通过群体感知来判断安全与否，通过观察同伴来学习，从群体领导中寻求方向，通过社交接触来安抚自己。"群居型"马的社交脑区（包括梭状回和镜像神经元系统）更为活跃。当它被迫与群体分离时，脑内的压力反应会被显著激活——这种"分离焦虑"不是后天养成的坏习惯，而是刻在基因里的生存策略。',
+  },
+  lone: {
+    title: '独立：自给自足的社交风格',
+    body: '"独立型"马的社交脑区虽然完整，但对群体依赖的程度较低。Janet Jones 指出，马匹的独立性既受遗传影响，也与个体经历相关。独立不等于冷漠——这匹马只是不需要持续的社会验证来获得安全感。对于独立型马匹，骑手需要花更多时间建立一对一的信任关系，因为"群体压力"对它的影响较小。一旦建立了信任，这种关系往往非常稳固。',
+  },
+  acute: {
+    title: '马脑的感官处理',
+    body: 'Janet Jones 详细描述了马的感官世界：马的身体极其敏感（unbelievably sensitive），其感官皮层在脑中所占比例惊人。一匹"敏锐型"马的体感皮层（somatosensory cortex）对触觉输入的处理更加精细——你能用最微妙的体重转移和腿部暗示来引导它。这种高灵敏度是双刃剑：精确的辅助能传达丰富的指令，但不稳定的骑坐也会被放大。"笃定型"马则需要更明确的信号，而这对于初学者或不太稳定的骑手来说反而是优势。',
+  },
+  grounded: {
+    title: '笃定：钝感力的优势',
+    body: '"笃定型"马的体感神经系统对触觉刺激的敏感度较低，需要更明确、更有力的辅助才能产生反应。Janet Jones 在书中讨论到，这种"钝感"其实是一种保护机制——它使马能够承受日常处理的压力而不被过度刺激。对于教学马、新手马和儿童马来说，这种特质极为宝贵：即使骑手发出不稳定的信号，这匹马也不会困惑或紧张。然而，正因为"什么也不说"，骑手需要格外关注这匹马是否实际上在承受压力或疼痛。',
+  },
+};
+
+const QUESTIONS = [
+  // Vigilant vs Calm (0-3)
+  {
+    dim: 'vigilant',
+    q: '在调教场或马房里，远处传来一声突然的巨响（卡车经过或门被关上），你的马会：',
+    a: '立刻抬头锁定声音方向，身体绷紧，耳朵高速转动搜索来源',
+    b: '抬头或转一下耳朵，确认没有威胁就继续做自己的事'
+  },
+  {
+    dim: 'vigilant',
+    q: '训练场里新放了一个障碍物或标志桶（昨天还不在这里），你的马：',
+    a: '远远就注意到了，目不转睛盯着看，可能需要绕路或停下来检查半天',
+    b: '注意到它，好奇闻一闻，随后就恢复正常工作'
+  },
+  {
+    dim: 'vigilant',
+    q: '在熟悉的户外路线上骑行时，你的马最典型的状态是：',
+    a: '耳朵和眼睛不停转动扫描周围，任何小动静都能引起明显反应',
+    b: '低头放松，步伐稳健，对周围事物总体上不太在意'
+  },
+  {
+    dim: 'vigilant',
+    q: '在刷马时，有人从门口走进来，你的马：',
+    a: '立刻停下动作，转头去看是谁，直到确认没有威胁才放松',
+    b: '可能会瞥一眼，然后继续享受梳毛'
+  },
+  // Nervous vs Steady (4-7)
+  {
+    dim: 'nervous',
+    q: '你的马被突然吓到后（比如塑料纸飞过），恢复平静需要多久？',
+    a: '几分钟甚至更长时间仍在紧张，身体发抖，反复寻找吓到它的东西',
+    b: '吓一跳但几秒就缓过来，甩甩头就可以继续工作'
+  },
+  {
+    dim: 'nervous',
+    q: '在陌生环境中与同伴分开时，你的马表现如何？',
+    a: '焦急嘶叫，来回踱步，满头大汗，完全无法集中注意力',
+    b: '可能会叫一两声但很快安静，愿意与你配合'
+  },
+  {
+    dim: 'nervous',
+    q: '当你尝试教马一件新的事（第一次跨地杆、第一次走水坑）：',
+    a: '犹豫不决，可能冲过去或后退，身体僵硬，呼吸急促',
+    b: '好奇地探索，愿意尝试，即使错了也不慌张'
+  },
+  {
+    dim: 'nervous',
+    q: '兽医或钉蹄师来做常规检查/治疗时：',
+    a: '十分警惕，肌肉紧张，需要大量安抚，稍有不适就反应剧烈',
+    b: '坦然站着配合，对处理过程比较接受'
+  },
+  // Herd vs Lone (8-11)
+  {
+    dim: 'herd',
+    q: '被单独带到训练场（其他马在远处），你的马会：',
+    a: '不停嘶叫，注意力一直在马群方向，明显心不在焉',
+    b: '愿意跟你走，不特别在意是否与同伴分离'
+  },
+  {
+    dim: 'herd',
+    q: '在牧场或放牧时，你的马通常处于什么位置？',
+    a: '总在群体中间，与周围马保持互动，不习惯独处',
+    b: '经常独自在一边吃草，或者自在地远离马群'
+  },
+  {
+    dim: 'herd',
+    q: '旁边马厩来了新马，你的马怎么反应？',
+    a: '立刻隔着围栏互动建立联系，非常感兴趣',
+    b: '观察一下但不主动上前，保持适当距离'
+  },
+  {
+    dim: 'herd',
+    q: '面对一个友善的陌生人，你的马倾向于：',
+    a: '主动上前认识，寻求人的关注和互动',
+    b: '保持距离，等人来接触，不急于建立关系'
+  },
+  // Acute vs Grounded (12-15)
+  {
+    dim: 'acute',
+    q: '刷毛时碰到耳朵、肚子、腿部等敏感部位，你的马：',
+    a: '皮肤抖动，可能很怕痒，对触碰的力度和方式很敏感',
+    b: '站得很稳，不太在意，几乎没什么反应'
+  },
+  {
+    dim: 'acute',
+    q: '你对马发出骑坐或腿部辅助时，它的反应是：',
+    a: '能感觉到最微小的变化——一点腿的暗示、坐骨重心的微弱转移',
+    b: '需要更明确有力的辅助；细微信号很难被它捕捉到'
+  },
+  {
+    dim: 'acute',
+    q: '当你用语音指令与马交流时：',
+    a: '很快将词汇与动作关联，对语调变化很敏感',
+    b: '需要较多重复来建立语音关联，对语调变化不太敏感'
+  },
+  {
+    dim: 'acute',
+    q: '衔铁/缰绳接触方面：',
+    a: '非常轻柔的接触就足够，嘴部敏感，能感觉到手指的细微动作',
+    b: '需要更明确的接触，对轻辅助反应不大'
+  },
+];
+
+// ═══════════════════════════════════════════════════
+// TYPE DATA — 16 types
+// ═══════════════════════════════════════════════════
+
+const TYPES = {
+
+  // ═══ 16 type color assignments (horse-visible palette) ═══
+  TYPE_COLORS: {
+    'VNHA': '#1A5276', 'VNHG': '#2471A3', 'VNLA': '#2E86C1', 'VNLG': '#5DADE2',
+    'VSHA': '#0E6655', 'VSHG': '#148F77', 'VSLA': '#1ABC9C', 'VSLG': '#48C9B0',
+    'CNHA': '#7D6608', 'CNHG': '#9A7D0A', 'CNLA': '#B7950B', 'CNLG': '#D4AC0D',
+    'CSHA': '#566573', 'CSHG': '#717D7E', 'CSLA': '#85929E', 'CSLG': '#AEB6BF',
+  },
+  TYPE_COLORS_LIGHT: {
+    'VNHA': '#D6EAF8', 'VNHG': '#D6EAF8', 'VNLA': '#D6EAF8', 'VNLG': '#EBF5FB',
+    'VSHA': '#D1F2EB', 'VSHG': '#D1F2EB', 'VSLA': '#D1F2EB', 'VSLG': '#E8F8F5',
+    'CNHA': '#FCF3CF', 'CNHG': '#FCF3CF', 'CNLA': '#FCF3CF', 'CNLG': '#FEF9E7',
+    'CSHA': '#EAECEE', 'CSHG': '#EAECEE', 'CSLA': '#F2F3F4', 'CSLG': '#F2F3F4',
+  },
+
+  'VNHA': {
+    name: '岗哨型',
+    subtitle: 'The Sentinel',
+    description: '这匹马天生就是一个"预警系统"。它的每一根神经都在扫描环境中的潜在危险，对任何不寻常的刺激都会立即做出反应。由于高度的警觉性，它往往是马群中第一个发现问题的个体。它的敏锐意味着它必须生活在一个可预测、低压力的环境中才能茁壮成长。',
+    traits: [
+      '对环境变化极度敏感，是最早发现异常的"警报器"',
+      '在熟悉和安全的环境中会显著放松',
+      '对驯马师的情绪状态非常敏感——你的紧张就是它的紧张',
+      '需要可预测的日常流程来建立安全感和信任',
+    ],
+    tips: [
+      '用间接训练法（Indirect Training）：先降低环境刺激，再逐步增加挑战',
+      '建立一致且可预测的日常流程——固定喂食、备马、训练顺序',
+      '奖励"没有出现的问题行为"——注意并表扬它的平静时刻',
+      '避免在它高度紧张时强行推进，这会加深恐惧联结',
+      '使用非食物奖励（抚摸、休息、温柔的声音）比食物奖励更有效',
+    ],
+  },
+  'VNHG': {
+    name: '守门型',
+    subtitle: 'The Gatekeeper',
+    description: '像一匹警觉的守卫马——你的马总是保持对周围环境的关注，但它不会像"岗哨型"那样对触觉刺激过度敏感。它宁可站岗放哨也不愿被出其不意地偷袭，但它身体的"钝感"让它能更好地承受日常处理。',
+    traits: [
+      '始终保持对环境的监控，但不被细微触觉所干扰',
+      '对同伴和马群有强烈的保护意识',
+      '在需要冷静处理危机时表现可靠',
+      '训练中需要明确指令，不易被轻辅助影响',
+    ],
+    tips: [
+      '先建立领导地位——它需要一个它信任的"头马"',
+      '利用它的社交性：让它观察一匹冷静的"示范马"来学习新技能',
+      '辅助要清晰明确——细微的信号它可能感觉不到',
+      '在不熟悉的环境先做地面工作，建立信任后再上马',
+    ],
+  },
+  'VNLA': {
+    name: '野马型',
+    subtitle: 'The Wild Card',
+    description: '这匹马兼具高度警觉和独立性格——它的雷达永远开着，但它不太依赖同伴来获得安全感。这种组合造就了一个难以预测但极其聪明的个体。它对世界极度敏感，但决定权永远在自己手里。',
+    traits: [
+      '既警觉又独立——对环境敏感但不需要马群来获得安全感',
+      '可能会对人类的领导力发起"测试"——它在确认你是否值得信任',
+      '学习极快但也极容易学会坏习惯',
+      '需要高级骑手或经验丰富的驯马师来引导',
+    ],
+    tips: [
+      '先用间接训练法让它自愿选择合作，而非强迫服从',
+      '每次训练都要有明确的开头和结尾——"测试行为"是它学习的正常方式',
+      '用奖励训练法，在它做对时立即给予非食物奖励',
+      '给它"思考的空间"——停止施压，让它自己做出正确选择',
+      '避免过度处理——这种类型的马容易被过度刺激',
+    ],
+  },
+  'VNLG': {
+    name: '独狼型',
+    subtitle: 'The Lone Watcher',
+    description: '它站在马群的边缘，但什么都看在眼里。独立且警觉，"独狼型"的马不需要其他马或人的持续关注，但它对环境中任何不寻常的事物都保持警惕。它独立到有时会让人误以为它"冷漠"——但实际上它只是用自己的方式与世界相处。',
+    traits: [
+      '保持距离观察世界，不急于参与或回应',
+      '对压力有较高的承受阈值，不容易被触觉刺激干扰',
+      '需要时间来建立信任，但一旦建立就会非常稳固',
+      '自主性强，不会盲目跟随群体',
+    ],
+    tips: [
+      '给它时间和空间——强迫亲近会适得其反',
+      '用一致性赢得尊重——它尊重明确的领导和清晰一致的规则',
+      '辅助要明确——细微信号对它的效果有限',
+      '利用它的独立性：在群体场景中，它可能是最好的"示范马"',
+    ],
+  },
+  'VSHA': {
+    name: '联络型',
+    subtitle: 'The Ambassador',
+    description: '这匹马是马房里的"外交官"。它警觉但不神经质，社交但不黏人，敏感但不脆弱。它对环境的观察力很强，但情绪稳定，能快速从惊吓中恢复。它善于与人建立联结，是最适合新手的类型之一。',
+    traits: [
+      '同时具备警觉度和情绪稳定性——"看见了但不会被吓跑"',
+      '社交能力强，容易与人和其他马建立积极关系',
+      '对身体辅助高度敏感，骑手可以通过细微信号与它沟通',
+      '适应性强，能够应对多种训练场景和环境变化',
+    ],
+    tips: [
+      '这种马适合用奖励训练法——它对积极强化反应极佳',
+      '因为它很敏感，骑手要注意自己的辅助质量——它会放大你的错误',
+      '利用它的社交性：可以把它作为年轻马的"导师马"',
+      '保持训练的多样性——它能从变化和挑战中快速学习',
+    ],
+  },
+  'VSHG': {
+    name: '定锚型',
+    subtitle: 'The Steady Watch',
+    description: '马群中的"定海神针"。它保持警觉但不惊慌，社交但不依赖。它是那种在风暴中也能保持冷静的马——其他马会向它寻求安全感。触觉上的钝感让它能承受日常处理的压力，是马房中最可靠的存在之一。',
+    traits: [
+      '在群体中是天然的情绪稳定器——其他马在它身边会感到安全',
+      '对环境的变化保持关注但不会过度反应',
+      '社交意愿强但不黏人，能和不同的马和人相处',
+      '需要明确的辅助——细微信号容易被忽略',
+    ],
+    tips: [
+      '可以把它作为新马或胆怯马的"示范马"',
+      '利用镜像神经元效应：让它示范新技能给其他马看',
+      '辅助要果断清晰——它不会因小信号而分心',
+      '这类马通常耐受力强，但也要注意不要因为"它不说痛"而忽略不适',
+    ],
+  },
+  'VSLA': {
+    name: '侦察型',
+    subtitle: 'The Scout',
+    description: '天生的领路马。"侦察型"的马会走在队伍最前面，既保持警觉又情绪稳定。它对外界充满好奇但不恐惧，独立但不孤僻。它的敏锐让它能察觉到骑手可能忽略的细节，而它的稳定让它不会为此惊慌失措。',
+    traits: [
+      '喜欢"走在前面"——无论是字面意义上的领路还是接受新挑战',
+      '警觉但不神经质：能看到一切，但只有真正重要的才值得反应',
+      '高度的感官灵敏度让它能回应最细微的辅助',
+      '独立性意味着它不会盲目跟随，但也因此需要明确的领导',
+    ],
+    tips: [
+      '给它"工作"——这种马需要精神刺激和挑战',
+      '在户外骑行时，让它做领路马——这满足它的天性',
+      '用精确的辅助与它沟通——它能回应极细微的信号',
+      '注意不要过度训练——虽然它耐力好，但精神消耗同样需要恢复',
+    ],
+  },
+  'VSLG': {
+    name: '磐石型',
+    subtitle: 'The Foundation',
+    description: '最稳健、最可靠的类型。"磐石型"的马拥有警觉的头脑和稳定的情绪，结合社交上的独立和触觉上的钝感。它几乎不为什么事情慌张，也不会因为细微的触觉刺激而分心。它是教学马、儿童马、新手马的理想人选。',
+    traits: [
+      '情绪极其稳定——几乎没有什么能让它真正慌张',
+      '独立自信，不需要依赖其他马或人来获得安全感',
+      '对触觉和辅助的敏感度较低——"钝感"对它来说是优势',
+      '冷静地观察世界但不轻易被外界事物带走注意力',
+    ],
+    tips: [
+      '非常适合作为教学马或新手的第一匹马',
+      '辅助需要清晰、果断——细微信号传递不到它那里',
+      '优势在于它不容易被"练坏"——即使骑手犯错也不容易产生问题行为',
+      '不要因为它"什么都不怕"就忽略正常的脱敏训练',
+    ],
+  },
+  'CNHA': {
+    name: '树袋熊型',
+    subtitle: 'The Velcro',
+    description: '这匹马看起来温顺安静，但内心其实充满不安全感。它极度依赖同伴——无论是马还是人。它对外界的刺激不会立刻表现出警觉，但内心的焦虑水平其实很高。它是那种如果不跟同伴在一起就会非常焦虑的马。',
+    traits: [
+      '外表淡定但内心焦虑——安静的外表掩盖了高压力水平',
+      '强烈依赖同伴——如果没有其他马在附近会极度不安',
+      '对身体辅助敏感，对骑手的情绪变化也很敏感',
+      '如果焦虑积累到一定程度，可能会突然爆发',
+    ],
+    tips: [
+      '建立可预测的日常流程——这对它的安全感至关重要',
+      '先用"伙伴马"帮助它适应新环境，再逐步减少依赖',
+      '注意它安静外表下的压力信号：肌肉紧张、耳朵快速转动、眼白露出',
+      '不要因为它"看起来很乖"就忽略它的不适信号',
+      '奖励训练法对它特别有效——它渴望取悦你',
+    ],
+  },
+  'CNHG': {
+    name: '静雨型',
+    subtitle: 'The Quiet Storm',
+    description: '外表平静、内心有涟漪但不外显。它对群体有依赖性，但触觉上不算敏感。这种马可能会在面对压力时"闷着不说"，直到某天突然爆发。日常中它很好相处，但需要细心的人读懂它微妙的信号。',
+    traits: [
+      '外在安静配合，但内心的紧张可能在不经意间积累',
+      '有群体依赖性——有同伴在身边时表现最佳',
+      '触觉和辅助敏感度适中——不太容易被细微信号干扰',
+      '需要明确的领导——它会向值得信任的人寻求指引',
+    ],
+    tips: [
+      '给它一个"伙伴"——无论是马还是稳定的驯马师',
+      '注意微妙的压力信号：拒绝前进、耳朵后翻、尾巴甩动',
+      '间接训练法对它特别有效——给它时间来建立信心',
+      '辅助要清晰明确——模糊的信号会增加它的焦虑',
+    ],
+  },
+  'CNLA': {
+    name: '闷罐型',
+    subtitle: 'The Bottle',
+    description: '这匹马把一切都藏在心底。它对世界高度敏感——能感觉到最细微的触觉变化——但它选择独自承受而不是向群体寻求安慰。它可能看起来疏离，但它的内在世界极其丰富（也极其紧张）。读懂它的人会获得一匹极其忠诚、细腻的伙伴。',
+    traits: [
+      '高度敏感但极度独立——自己消化所有感受',
+      '与它建立真正的信任需要时间，但一旦建立就牢不可破',
+      '对身体辅助高度敏感——你可以用"念头"来引导它',
+      '可能会因为长期积累的压力而出现意想不到的反应',
+    ],
+    tips: [
+      '用非强迫的方式建立信任——让它主动选择靠近你',
+      '"少即是多"——过度处理会增加它的压力',
+      '因为它的敏感度极高，骑手必须提供精确稳定的辅助',
+      '给它独处的时间——它不是孤僻，它需要自己的空间来恢复',
+      '注意观察它释放压力的方式：打哈欠、抖动、舔嘴唇',
+    ],
+  },
+  'CNLG': {
+    name: '斯多葛型',
+    subtitle: 'The Stoic',
+    description: '情绪的"斯多葛主义者"。它对环境有一定的不安全感，但你从外表几乎看不出来。它习惯于自己处理一切，不依赖同伴，也不容易被触觉干扰。它是一个坚强的个体，但正因为"什么也不说"，有时会被误认为"没问题"，直到问题变得严重。',
+    traits: [
+      '几乎不向外表露情绪——"硬汉/硬汉妞"风格',
+      '独立性强，不需要同伴也能自处',
+      '对外部辅助不太敏感——你可能会觉得它"反应慢"',
+      '如果出现问题行为，通常是长期压力积累的结果',
+    ],
+    tips: [
+      '明确、一致的规则很重要——它尊重清晰的领导',
+      '它的"配合"不一定等于"舒服"——注意非语言信号',
+      '辅助要果断——细微信号对它来说基本不存在',
+      '定期做兽医检查——它不会主动表现出疼痛或不适',
+    ],
+  },
+  'CSHA': {
+    name: '暖心型',
+    subtitle: 'The Heart',
+    description: '马房里的"小太阳"。它放松、友善、和谁都处得来。注意力风格偏向淡定，不容易被外界事物打扰；情绪上极其稳定；喜欢社交但不黏人；对身体辅助高度敏感。这种马天生就是让人喜爱的——它乐于与人合作，学东西快，而且享受这个过程。',
+    traits: [
+      '天性乐观——面对新事物总是带着好奇心而不是恐惧',
+      '温暖友善——和人以及其他马都能建立良好关系',
+      '对身体辅助高度敏感，骑手能感受到"人马合一"的默契',
+      '情绪恢复力极强——挫折不会在它心里留下阴影',
+    ],
+    tips: [
+      '奖励训练法是黄金标准——它会为你做任何事来换取你的认可',
+      '因为敏感度高，骑手要保持辅助的质量和一致性',
+      '它是"完美教学马"的候选人——耐心、宽容、善于沟通',
+      '虽然它看起来什么也不怕，但基础的脱敏训练仍然必要',
+    ],
+  },
+  'CSHG': {
+    name: '基石型',
+    subtitle: 'The Pillar',
+    description: '马房里的"金牌员工"。淡定、稳健、合群但不黏人、触觉钝感——这是最受人欢迎的马类型之一。它情绪稳定到几乎不会因为任何事情而慌张，喜欢和其他马在一起但不会因为分离而焦虑。它是那种"谁都能骑"的马。',
+    traits: [
+      '情绪稳定到令人羡慕——几乎没有什么能干扰到它',
+      '社交意愿强但不依赖——享受群体但也能独处',
+      '对辅助不太敏感——适合初学者和不稳定的骑手',
+      '适应能力强——能从一种训练快速切换到另一种',
+    ],
+    tips: [
+      '适合各种骑手水平——从新手到高级骑手都能骑',
+      '辅助要清晰坚定——不要指望它读到最细微的信号',
+      '即使它很好骑，也要注意保持训练的趣味性和多样性',
+      '不要因为"它什么都能忍"就忽视它的休息和恢复需要',
+    ],
+  },
+  'CSLA': {
+    name: '禅者型',
+    subtitle: 'The Sage',
+    description: '一匹完全自洽的马。"禅者型"的马情绪稳定到极致，对外界淡定从容，社交上独立自主，同时拥有极高的感知灵敏度。它活在当下，既不需要同伴的陪伴来获得安全感，也不会被外界事物所干扰。但它并不是"迟钝"——相反，它能感觉到一切，只是选择不被它们影响。',
+    traits: [
+      '内心极其安定——几乎到了一种"禅"的境界',
+      '独立但不冷漠——它只是不需要别人来定义自己的状态',
+      '对辅助高度敏感——但它选择性地回应，而不是条件反射式地反应',
+      '极难被"练坏"——即使骑手犯错，它也能保持自己的平衡',
+    ],
+    tips: [
+      '这是最理想的高级骑手马——它能回应极细微的辅助',
+      '给它自主的空间——微管理会破坏它的合作意愿',
+      '它是其他马的绝佳"平静示范"——它的镇定会传染给同伴',
+      '虽然看起来"做什么都行"，但它仍然有自己的偏好——尊重它们',
+    ],
+  },
+  'CSLG': {
+    name: '泰山型',
+    subtitle: 'The Boulder',
+    description: '终极稳定。"泰山型"的马几乎不可撼动——无论从情绪上、社交上还是触觉上。它不需要任何人或马，也不会被任何事情吓到。它对世界的态度是彻底的从容。这种马非常少见，是真正的"一生一遇"的搭档。',
+    traits: [
+      '真正意义上的"天塌下来也不慌"',
+      '完全的自给自足——不需要外部认可或陪伴',
+      '对辅助不敏感——需要明确直接的沟通方式',
+      '极其稳定——是新人、儿童、康复骑乘的理想选择',
+    ],
+    tips: [
+      '最适合教学场景——几乎不可能被练坏',
+      '辅助要非常明确坚定——它的"钝感"是它的保护壳',
+      '不要因为它"什么反应都没有"就忽略它的需求',
+      '它的稳定可能意味着它很会"藏着掖着"——定期做健康检查',
+    ],
+  },
+};
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+
+let currentQ = 0;
+let answers = new Array(QUESTIONS.length).fill(null);
+let isRestart = false;
+
+// ═══════════════════════════════════════════════════
+// SCREEN MANAGEMENT
+// ═══════════════════════════════════════════════════
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ═══════════════════════════════════════════════════
+// START
+// ═══════════════════════════════════════════════════
+
+function startTest() {
+  currentQ = 0;
+  answers = new Array(QUESTIONS.length).fill(null);
+  renderProgress();
+  renderQuestion();
+  showScreen('question-screen');
+}
+
+// ═══════════════════════════════════════════════════
+// PROGRESS
+// ═══════════════════════════════════════════════════
+
+function renderProgress() {
+  const bar = document.getElementById('progress-bar');
+  bar.innerHTML = '';
+  for (let i = 0; i < QUESTIONS.length; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'progress-dot';
+    if (i < currentQ) dot.classList.add('filled');
+    if (i === currentQ) dot.classList.add('current');
+    bar.appendChild(dot);
+  }
+  const remaining = QUESTIONS.length - currentQ - 1;
+  const pct = Math.round((currentQ) / QUESTIONS.length * 100);
+  document.getElementById('progress-text').textContent =
+    `${currentQ + 1} / ${QUESTIONS.length}  ·  已完成 ${pct}%  ·  还剩 ${remaining} 题`;
+}
+
+// ═══════════════════════════════════════════════════
+// RENDER QUESTION
+// ═══════════════════════════════════════════════════
+
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  document.getElementById('q-number').textContent = `第 ${currentQ + 1} / ${QUESTIONS.length} 题 · ${DIMS.find(d => d.id === q.dim).label}`;
+  document.getElementById('q-text').textContent = q.q;
+
+  const container = document.getElementById('q-options');
+  container.innerHTML = '';
+
+  const optA = document.createElement('div');
+  optA.className = 'option-card' + (answers[currentQ] === 'a' ? ' selected' : '');
+  optA.innerHTML = `<div class="label">选项 A</div><div class="text">${q.a}</div>`;
+  optA.onclick = () => select('a');
+  container.appendChild(optA);
+
+  const optB = document.createElement('div');
+  optB.className = 'option-card' + (answers[currentQ] === 'b' ? ' selected' : '');
+  optB.innerHTML = `<div class="label">选项 B</div><div class="text">${q.b}</div>`;
+  optB.onclick = () => select('b');
+  container.appendChild(optB);
+
+  document.getElementById('prev-btn').style.display = currentQ === 0 ? 'none' : 'inline-block';
+  const nextBtn = document.getElementById('next-btn');
+  if (currentQ === QUESTIONS.length - 1) {
+    nextBtn.textContent = '查看结果 →';
+  } else {
+    nextBtn.textContent = '下一题 →';
+  }
+}
+
+function select(choice) {
+  answers[currentQ] = choice;
+  renderQuestion();
+}
+
+// ═══════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════
+
+function nextQuestion() {
+  if (answers[currentQ] === null) {
+    const container = document.getElementById('q-options');
+    container.classList.remove('shake');
+    void container.offsetWidth; // force reflow
+    container.classList.add('shake');
+    return;
+  }
+  if (currentQ < QUESTIONS.length - 1) {
+    currentQ++;
+    renderProgress();
+    renderQuestion();
+    window.scrollTo(0, 0);
+  } else {
+    showResults();
+  }
+}
+
+function prevQuestion() {
+  if (currentQ > 0) {
+    currentQ--;
+    renderProgress();
+    renderQuestion();
+    window.scrollTo(0, 0);
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// RESULTS
+// ═══════════════════════════════════════════════════
+
+function showResults() {
+  // calculate scores
+  const scores = {
+    vigilant: 0, calm: 0,
+    nervous: 0, steady: 0,
+    herd: 0, lone: 0,
+    acute: 0, grounded: 0,
+  };
+
+  QUESTIONS.forEach((q, i) => {
+    if (answers[i] === 'a') scores[q.dim]++;
+    else if (answers[i] === 'b') {
+      // map to opposite
+      const opposites = { vigilant: 'calm', nervous: 'steady', herd: 'lone', acute: 'grounded' };
+      scores[opposites[q.dim]]++;
+    }
+  });
+
+  // determine 4-letter type
+  const type = [
+    scores.vigilant >= scores.calm ? 'V' : 'C',
+    scores.nervous >= scores.steady ? 'N' : 'S',
+    scores.herd >= scores.lone ? 'H' : 'L',
+    scores.acute >= scores.grounded ? 'A' : 'G',
+  ].join('');
+
+  const data = TYPES[type] || TYPES['CSHG']; // fallback
+
+  // animate confetti
+  launchConfetti();
+
+  // fill result
+  document.getElementById('r-code').textContent = type;
+  const codeEl = document.getElementById('r-code');
+  codeEl.style.background = TYPES.TYPE_COLORS[type] || 'var(--blue-deep)';
+  document.getElementById('r-name').textContent = data.name;
+  document.getElementById('r-subtitle').textContent = data.subtitle;
+
+  // dimension chips
+  const dimLabels = { 'V':'警觉型','C':'淡定型','N':'紧张型','S':'稳健型','H':'群居型','L':'独立型','A':'敏锐型','G':'笃定型' };
+  const dimEl = document.getElementById('r-dims');
+  dimEl.innerHTML = type.split('').map((ch, i) => {
+    const chip = `<span class="dim-chip"><span class="letter">${ch}</span><span class="meaning">${dimLabels[ch]||ch}</span></span>`;
+    return i < 3 ? chip + '<span class="dim-sep">·</span>' : chip;
+  }).join('');
+
+  document.getElementById('r-description').textContent = data.description;
+
+  const traitsEl = document.getElementById('r-traits');
+  traitsEl.innerHTML = data.traits.map(t => `<li>${t}</li>`).join('');
+
+  const tipsEl = document.getElementById('r-tips');
+  tipsEl.innerHTML = data.tips.map(t => `<li>${t}</li>`).join('');
+
+  // dimension bars
+  const dimOrder = [
+    { label: '警觉型 V', score: scores.vigilant, total: scores.vigilant + scores.calm, opp: '淡定型 C' },
+    { label: '紧张型 N', score: scores.nervous, total: scores.nervous + scores.steady, opp: '稳健型 S' },
+    { label: '群居型 H', score: scores.herd, total: scores.herd + scores.lone, opp: '独立型 L' },
+    { label: '敏锐型 A', score: scores.acute, total: scores.acute + scores.grounded, opp: '笃定型 G' },
+  ];
+
+  const barsEl = document.getElementById('dim-bars');
+  barsEl.innerHTML = dimOrder.map(d => {
+    const pct = d.total > 0 ? Math.round(d.score / d.total * 100) : 50;
+    return `
+      <div class="dim-bar">
+        <div class="dim-label">
+          <span>${d.label}</span>
+          <span>${d.opp}</span>
+        </div>
+        <div class="track">
+          <div class="fill" style="width:${pct}%"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Neuroscience explanations
+  const neuroEl = document.getElementById('neuro-content');
+  neuroEl.innerHTML = DIMS.map((dim, idx) => {
+    const typeLetter = type[idx]; // V/N/H/A etc
+    const isLeft = typeLetter === dim.shortL;
+    const neuroKey = isLeft ? dim.id : dim.shortR.toLowerCase();
+    const neuroMap = { 'c': 'calm', 's': 'steady', 'l': 'lone', 'g': 'grounded' };
+    const finalKey = neuroMap[neuroKey] || neuroKey;
+    const ndata = NEURO_SCIENCE[finalKey];
+    if (!ndata) return '';
+    return `
+      <div class="neuro-item">
+        <div class="neuro-label">${dim.label}：${isLeft ? dim.left : dim.right}</div>
+        <div class="neuro-title">${ndata.title}</div>
+        <p>${ndata.body}</p>
+      </div>
+    `;
+  }).join('');
+
+  showScreen('result-screen');
+}
+
+// ═══════════════════════════════════════════════════
+// CONFETTI
+// ═══════════════════════════════════════════════════
+
+function launchConfetti() {
+  const colors = ['#1B4F72','#2471A3','#D4A017','#1ABC9C','#5DADE2','#F4D03F'];
+  for (let i = 0; i < 50; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.top = '-20px';
+    el.style.background = colors[Math.floor(Math.random() * colors.length)];
+    el.style.width = (6 + Math.random() * 8) + 'px';
+    el.style.height = (6 + Math.random() * 8) + 'px';
+    el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    el.style.animation = `confettiFall ${1.5 + Math.random() * 2}s ease-in ${Math.random() * 1.5}s forwards`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// SHARE — Canvas Share Card
+// ═══════════════════════════════════════════════════
+
+function shareResult() {
+  const type = document.getElementById('r-code').textContent;
+  const name = document.getElementById('r-name').textContent;
+  const subtitle = document.getElementById('r-subtitle').textContent;
+  generateShareCard(type, name, subtitle);
+}
+
+function generateShareCard(typeCode, typeName, typeSubtitle) {
+  const width = 600;
+  const height = 400;
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+
+  // Background gradient — horse-vision blue palette
+  const grad = ctx.createLinearGradient(0, 0, 0, height);
+  grad.addColorStop(0, '#1B4F72');
+  grad.addColorStop(0.4, '#2471A3');
+  grad.addColorStop(1, '#D6EAF8');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, width, height);
+
+  // Decorative circles
+  ctx.globalAlpha = 0.08;
+  ctx.fillStyle = '#FFFFFF';
+  ctx.beginPath(); ctx.arc(520, 60, 180, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(80, 380, 120, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // White content card
+  ctx.fillStyle = '#FFFFFF';
+  ctx.shadowColor = 'rgba(27,79,114,0.12)';
+  ctx.shadowBlur = 30;
+  ctx.shadowOffsetY = 4;
+  roundRect(ctx, 40, 30, 520, 290, 16);
+  ctx.fill();
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+
+  // Type code — large, main title
+  const typeColors = TYPES.TYPE_COLORS || {};
+  const badgeColor = typeColors[typeCode] || '#1B4F72';
+  ctx.fillStyle = badgeColor;
+  roundRect(ctx, 170, 55, 260, 64, 16);
+  ctx.fill();
+
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = 'bold 40px Inter, monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(typeCode, 300, 87);
+
+  // Type name + subtitle
+  ctx.fillStyle = '#1C2E3F';
+  ctx.font = 'bold 22px "Noto Sans SC", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(typeName + ' · ' + typeSubtitle, 300, 152);
+
+  // Divider
+  ctx.strokeStyle = '#D6EAF8';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(180, 175);
+  ctx.lineTo(420, 175);
+  ctx.stroke();
+
+  // Tag
+  ctx.fillStyle = '#EBF5FB';
+  roundRect(ctx, 210, 195, 180, 30, 15);
+  ctx.fill();
+  ctx.fillStyle = '#1B4F72';
+  ctx.font = '13px Inter, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('基于《Horse Brain, Human Brain》', 300, 210);
+
+  // Description - fetch from current result
+  const desc = document.getElementById('r-description').textContent;
+  ctx.fillStyle = '#5D6D7E';
+  ctx.font = '14px "Noto Sans SC", sans-serif';
+  ctx.textAlign = 'center';
+  wrapText(ctx, desc, 300, 248, 440, 22, 3);
+
+  // Footer
+  ctx.fillStyle = '#2471A3';
+  ctx.font = '12px Inter, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('horse-personality-test', 300, 370);
+
+  // Add to page and trigger download
+  const link = document.createElement('a');
+  link.download = `马匹人格测试-${typeCode}.png`;
+  link.href = canvas.toDataURL('image/png');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  // Also attempt Web Share API
+  if (navigator.share && navigator.canShare) {
+    canvas.toBlob(async (blob) => {
+      try {
+        await navigator.share({
+          title: `我的马匹人格类型：${typeCode} ${typeName}`,
+          text: `我的马是 ${typeCode} ${typeName}（${typeSubtitle}）类型！来看看你家马是什么性格~`,
+          files: [new File([blob], `马匹人格-${typeCode}.png`, { type: 'image/png' })]
+        });
+      } catch (e) { /* user cancelled */ }
+    });
+  }
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+  const chars = text.split('');
+  let line = '';
+  let lines = 0;
+  for (let i = 0; i < chars.length; i++) {
+    const testLine = line + chars[i];
+    const metrics = ctx.measureText(testLine);
+    if (metrics.width > maxWidth && line.length > 0) {
+      ctx.fillText(line, x, y + lines * lineHeight);
+      lines++;
+      line = chars[i];
+      if (lines >= maxLines) {
+        ctx.fillText('...', x, y + (lines - 1) * lineHeight);
+        return;
+      }
+    } else {
+      line = testLine;
+    }
+  }
+  if (line.length > 0 && lines < maxLines) {
+    ctx.fillText(line, x, y + lines * lineHeight);
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// CTA / UTILITIES
+// ═══════════════════════════════════════════════════
+
+function showHandbookModal() {
+  // create overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+
+  overlay.innerHTML = `
+    <div class="handbook-modal">
+      <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button>
+
+      <div class="hm-icon">📘</div>
+      <h2 class="hm-title">《马脑，人脑》深度解读</h2>
+      <p class="hm-subtitle">基于 <em>Horse Brain, Human Brain</em> · Janet Jones 博士</p>
+
+      <div class="hm-divider"></div>
+
+      <div class="hm-section">
+        <h3>手册包含四大板块</h3>
+        <ul>
+          <li><strong>核心拆解</strong> — 人马脑部差异 · 视觉感知 · 感官整合 · 学习回路 · 情感共鸣</li>
+          <li><strong>实战动作手册</strong> — 脱敏训练 · 压力释放 · 注意力接管 · 跨环境泛化 · 骑手自检清单</li>
+          <li><strong>故障排除 FAQ</strong> — 阴影恐惧 · 赛场失灵 · 情绪传染 · 注意力涣散 · 共 16 个常见问题</li>
+          <li><strong>非骑乘行为管理</strong> — 社交压力 · 进食节律 · 马房幽闭 · 日常梳理与牵领策略</li>
+        </ul>
+      </div>
+
+      <div class="hm-section">
+        <h3>这份解读能帮你</h3>
+        <ul>
+          <li>从神经科学底层理解马的行为，告别盲目试错</li>
+          <li>掌握跨物种沟通的物理外挂——本体感觉</li>
+          <li>把书中 20 章知识转化为每天在马房能用的实操方法</li>
+        </ul>
+      </div>
+
+      <div class="hm-price">
+        <span class="hm-price-label">限时特价</span>
+        <span class="hm-price-amount">¥39.9</span>
+      </div>
+
+      <a class="hm-btn" href="https://www.ifdian.net/item/1e723e2c568e11f18a7c52540025c377" target="_blank" rel="noopener">限时特价 ¥39.9 立即购买</a>
+      <div class="hm-delivery-box">
+        <div class="step">💡 付款后打开爱发电 → 点击「<strong>查看内容</strong>」</div>
+        <div class="step">→ 私信作者发送 <span class="highlight">飞书文档</span> 获取链接</div>
+      </div>
+      <p class="hm-footer-note">约 3 万字 · 飞书文档格式</p>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+}
+
+function copyResult() {
+  const code = document.getElementById('r-code').textContent;
+  const name = document.getElementById('r-name').textContent;
+  const subtitle = document.getElementById('r-subtitle').textContent;
+  const desc = document.getElementById('r-description').textContent;
+  const text = `🐴 我的马匹人格类型：${code} ${name} (${subtitle})\n\n${desc}\n\n—— 基于《Horse Brain, Human Brain》神经科学测试`;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('结果已复制！分享给你的马友吧 🐴');
+  }).catch(() => {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    alert('结果已复制！');
+  });
+}
+
+function restartTest() {
+  if (confirm('确定重新测试吗？当前结果将丢失。')) {
+    startTest();
+  }
+}
+</script>
+
+</body>
+</html>
